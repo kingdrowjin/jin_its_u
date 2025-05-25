@@ -21,11 +21,15 @@ async function startServer() {
   // Create Express app
   const app = express();
 
-  // CORS configuration
+  // CORS configuration - Updated for production
   app.use(cors({
-    origin: process.env.NODE_ENV === 'production' 
-      ? ['https://your-frontend-domain.com'] 
-      : ['http://localhost:5173', 'http://localhost:3000'],
+    origin: [
+      'http://localhost:5173',
+      'http://localhost:3000',
+      'https://jin-its-u.vercel.app',
+      'https://jin-its-h4yig7x28-jins-projects-b44fc42b.vercel.app',
+      'https://jin-its-u-jins-projects-b44fc42b.vercel.app'
+    ],
     credentials: true
   }));
 
@@ -39,7 +43,7 @@ async function startServer() {
       return { user };
     },
     // Enable GraphQL Playground in development
-    introspection: process.env.NODE_ENV !== 'production',
+    introspection: true,
     playground: process.env.NODE_ENV !== 'production'
   });
 
@@ -62,12 +66,21 @@ async function startServer() {
     });
   });
 
+  // Root endpoint
+  app.get('/', (req, res) => {
+    res.json({ 
+      message: 'Employee Management API',
+      graphql: '/graphql',
+      health: '/health'
+    });
+  });
+
   // Start server
   const PORT = process.env.PORT || 4000;
   
   app.listen(PORT, () => {
     console.log(`🚀 Server ready at http://localhost:${PORT}${server.graphqlPath}`);
-    console.log(`📊 GraphQL Playground available in development mode`);
+    console.log(`�� GraphQL Playground available`);
     console.log(`💾 Database: ${process.env.MONGODB_URI}`);
   });
 }
